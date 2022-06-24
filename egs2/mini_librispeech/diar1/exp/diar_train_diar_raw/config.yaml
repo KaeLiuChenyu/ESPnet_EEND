@@ -1,0 +1,143 @@
+config: conf/train_diar.yaml
+print_config: false
+log_level: INFO
+dry_run: false
+iterator_type: chunk
+output_dir: exp/diar_train_diar_raw
+ngpu: 1
+seed: 0
+num_workers: 1
+num_att_plot: 3
+dist_backend: nccl
+dist_init_method: env://
+dist_world_size: null
+dist_rank: null
+local_rank: 0
+dist_master_addr: null
+dist_master_port: null
+dist_launcher: null
+multiprocessing_distributed: false
+unused_parameters: false
+sharded_ddp: false
+cudnn_enabled: true
+cudnn_benchmark: false
+cudnn_deterministic: true
+collect_stats: false
+write_collected_feats: false
+max_epoch: 100
+patience: 3
+val_scheduler_criterion:
+- valid
+- loss
+early_stopping_criterion:
+- valid
+- loss
+- min
+best_model_criterion:
+-   - valid
+    - acc
+    - max
+keep_nbest_models: 3
+nbest_averaging_interval: 0
+grad_clip: 5
+grad_clip_type: 2.0
+grad_noise: false
+accum_grad: 2
+no_forward_run: false
+resume: true
+train_dtype: float32
+use_amp: false
+log_interval: null
+use_matplotlib: true
+use_tensorboard: true
+use_wandb: false
+wandb_project: null
+wandb_id: null
+wandb_entity: null
+wandb_name: null
+wandb_model_log_interval: -1
+detect_anomaly: false
+pretrain_path: null
+init_param: []
+ignore_init_mismatch: false
+freeze_param: []
+num_iters_per_epoch: null
+batch_size: 16
+valid_batch_size: null
+batch_bins: 1000000
+valid_batch_bins: null
+train_shape_file:
+- exp/diar_stats_8k/train/speech_shape
+- exp/diar_stats_8k/train/spk_labels_shape
+valid_shape_file:
+- exp/diar_stats_8k/valid/speech_shape
+- exp/diar_stats_8k/valid/spk_labels_shape
+batch_type: folded
+valid_batch_type: null
+fold_length:
+- 80000
+- 800
+sort_in_batch: descending
+sort_batch: descending
+multiple_iterator: false
+chunk_length: 200000
+chunk_shift_ratio: 0.5
+num_cache_chunks: 64
+train_data_path_and_name_and_type:
+-   - dump/raw/simu/data/train_clean_5_ns2_beta2_500/wav.scp
+    - speech
+    - sound
+-   - dump/raw/simu/data/train_clean_5_ns2_beta2_500/espnet_rttm
+    - spk_labels
+    - rttm
+valid_data_path_and_name_and_type:
+-   - dump/raw/simu/data/dev_clean_2_ns2_beta2_500/wav.scp
+    - speech
+    - sound
+-   - dump/raw/simu/data/dev_clean_2_ns2_beta2_500/espnet_rttm
+    - spk_labels
+    - rttm
+allow_variable_data_keys: false
+max_cache_size: 0.0
+max_cache_fd: 32
+valid_max_cache_size: null
+optim: adam
+optim_conf:
+    lr: 0.01
+scheduler: noamlr
+scheduler_conf:
+    warmup_steps: 1000
+num_spk: 2
+init: xavier_uniform
+input_size: null
+model_conf:
+    attractor_weight: 1.0
+use_preprocessor: true
+frontend: default
+frontend_conf:
+    fs: 8k
+    hop_length: 128
+specaug: null
+specaug_conf: {}
+normalize: global_mvn
+normalize_conf:
+    stats_file: exp/diar_stats_8k/train/feats_stats.npz
+encoder: transformer
+encoder_conf:
+    input_layer: linear
+    num_blocks: 2
+    linear_units: 512
+    dropout_rate: 0.1
+    output_size: 256
+    attention_heads: 4
+    attention_dropout_rate: 0.0
+decoder: linear
+decoder_conf: {}
+label_aggregator: label_aggregator
+label_aggregator_conf: {}
+attractor: null
+attractor_conf: {}
+required:
+- output_dir
+version: '202205'
+distributed: false
