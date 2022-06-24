@@ -25,6 +25,7 @@ SECONDS=0
 # General configuration
 stage=1              # Processes starts from the specified stage.
 stop_stage=10000     # Processes is stopped at the specified stage.
+skip_data_download=true # Skip download simu dataset
 skip_data_prep=false # Skip data preparation stages
 skip_train=false     # Skip training stages
 skip_eval=false      # Skip decoding and evaluation stages
@@ -32,15 +33,13 @@ skip_upload=true     # Skip packing and uploading stages
 skip_upload_hf=true # Skip uploading to hugging face stages.
 ngpu=1               # The number of gpus ("0" uses cpu, otherwise use gpu).
 num_nodes=1          # The number of nodes
-nj=32                # The number of parallel jobs.
+nj=4                # The number of parallel jobs.
 dumpdir=dump         # Directory to dump features.
-inference_nj=32      # The number of parallel jobs in decoding.
+inference_nj=4      # The number of parallel jobs in decoding.
 gpu_inference=false  # Whether to perform gpu decoding.
 expdir=exp           # Directory to save experiments.
 python=python3       # Specify python to execute espnet commands
 
-# Data preparation related
-local_data_opts= # The options given to local/data.sh.
 
 # Feature extraction related
 feats_type=raw       # Feature type (raw or fbank_pitch).
@@ -67,7 +66,7 @@ download_model=   # Download a model from Model Zoo and use it for diarization.
 hf_repo=
 
 # scoring related
-collar=0         # collar for der scoring
+collar=0.25         # collar for der scoring
 frame_shift=128  # frame shift to convert frame-level label into real time
                  # this should be aligned with frontend feature extraction
 
@@ -82,11 +81,11 @@ lang=noinfo      # The language type of corpus.
 
 help_message=$(cat << EOF
 Usage: $0 --train-set <train_set_name> --valid-set <valid_set_name> --test_sets <test_set_names>
-
 Options:
     # General configuration
     --stage          # Processes starts from the specified stage (default="${stage}").
     --stop_stage     # Processes is stopped at the specified stage (default="${stop_stage}").
+    --skip_data_download # Skip download simu dataset (default="${skip_data_download}").
     --skip_data_prep # Skip data preparation stages (default="${skip_data_prep}").
     --skip_train     # Skip training stages (default="${skip_train}").
     --skip_eval      # Skip decoding and evaluation stages (default="${skip_eval}").
@@ -99,18 +98,13 @@ Options:
     --dumpdir        # Directory to dump features (default="${dumpdir}").
     --expdir         # Directory to save experiments (default="${expdir}").
     --python         # Specify python to execute espnet commands (default="${python}").
-
     # Data preparation related
-    --local_data_opts # The options given to local/data.sh (default="${local_data_opts}").
-
     # Feature extraction related
     --feats_type       # Feature type (only support raw currently).
     --audio_format     # Audio format: wav, flac, wav.ark, flac.ark  (only in feats_type=raw, default="${audio_format}").
     --fs               # Sampling rate (default="${fs}").
     --hop_length       # Hop length in sample number (default="${hop_length}")
     --min_wav_duration # Minimum duration in second (default="${min_wav_duration}").
-
-
     # Diarization model related
     --diar_tag        # Suffix to the result dir for diarization model training (default="${diar_tag}").
     --diar_config     # Config for diarization model training (default="${diar_config}").
@@ -118,17 +112,14 @@ Options:
                       # Note that it will overwrite args in diar config.
     --feats_normalize # Normalizaton layer type (default="${feats_normalize}").
     --num_spk         # Number of speakers in the input audio (default="${num_spk}")
-
     # Diarization related
     --inference_config # Config for diar model inference
     --inference_model  # diarization model path for inference (default="${inference_model}").
     --inference_tag    # Suffix to the inference dir for diar model inference
     --download_model   # Download a model from Model Zoo and use it for diarization (default="${download_model}").
-
     # Scoring related
     --collar      # collar for der scoring
     --frame_shift # frame shift to convert frame-level label into real time
-
     # [Task dependent] Set the datadir name created by local/data.sh
     --train_set               # Name of training set (required).
     --valid_set               # Name of development set (required).
@@ -186,14 +177,16 @@ diar_stats_dir="${expdir}/diar_stats_${fs}"
 diar_exp="${expdir}/diar_${diar_tag}"
 
 # ========================== Main stages start from here. ==========================
+if ! "${skip_data_download}"; then
+    if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
+        log "Stage 1: Download data for data/${train_set}, data/${valid_set}, etc."
+        # [Task dependent] Need to create data.sh for new corpus
+        local/prepare_shared.sh
+    fi
+fi
+
 
 if ! "${skip_data_prep}"; then
-    if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
-        log "Stage 1: Data preparation for data/${train_set}, data/${valid_set}, etc."
-        # [Task dependent] Need to create data.sh for new corpus
-        local/data.sh ${local_data_opts}
-    fi
-
     if [ ${stage} -le 2 ] && [ ${stop_stage} -ge 2 ]; then
 
         log "Stage 2: Format wav.scp: data/ -> ${data_feats}"
@@ -532,6 +525,7 @@ if ! "${skip_eval}"; then
 
     if [ ${stage} -le 7 ] && [ ${stop_stage} -ge 7 ]; then
         log "Stage 7: Scoring"
+        echo "${collar}"
         _cmd=${decode_cmd}
 
         for dset in "${valid_set}" ${test_sets}; do
