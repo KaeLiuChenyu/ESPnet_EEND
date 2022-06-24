@@ -47,7 +47,6 @@ $ cd /espnet/egs2/mini_libri/diar1
 $ ./run.sh
 ```
 ### Result
-You are suposed to get following result:
 With noisy dataset:
 ```sh
 |result_th0.7_med11_collar0.25|27.69|
