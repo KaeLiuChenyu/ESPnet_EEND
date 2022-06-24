@@ -48,12 +48,12 @@ $ ./run.sh
 ```
 ### Result
 ```sh
-#You are suposed to get following result:
-#With noisy dataset:
-#|result_th0.7_med11_collar0.25|27.69|
-#With clean dataset:
-#|result_th0.7_med11_collar0.25|21.80|
-
+You are suposed to get following result:
+With noisy dataset:
+|result_th0.7_med11_collar0.25|27.69|
+With clean dataset:
+|result_th0.7_med11_collar0.25|21.80|
+```
 
 ## License
 
