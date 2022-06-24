@@ -46,17 +46,13 @@ $ ./run.sh --skip_train true
 $ cd /espnet/egs2/mini_libri/diar1
 $ ./run.sh
 ```
-
-|result_th0.3_med11_collar0.25|24.75|
-|result_th0.3_med1_collar0.25|25.32|
-|result_th0.4_med11_collar0.25|19.54|
-|result_th0.4_med1_collar0.25|20.42|
-|result_th0.5_med11_collar0.25|19.26|
-|result_th0.5_med1_collar0.25|20.38|
-|result_th0.6_med11_collar0.25|19.97|
-|result_th0.6_med1_collar0.25|21.38|
-|result_th0.7_med11_collar0.25|21.80|
-|result_th0.7_med1_collar0.25|23.55|
+### Result
+```sh
+#You are suposed to get following result:
+#With noisy dataset:
+#|result_th0.7_med11_collar0.25|27.69|
+#With clean dataset:
+#|result_th0.7_med11_collar0.25|21.80|
 
 
 ## License
