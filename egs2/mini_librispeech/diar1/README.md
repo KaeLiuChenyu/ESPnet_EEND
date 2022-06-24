@@ -1,14 +1,11 @@
 ## Usage
 ### Inference
 ```sh
-# Go to project folder
-$ cd /espnet/egs2/mini_libri/diar1
 $ ./run.sh --skip_train true
 ```
 ### Train
 ```sh
 #Go to project folder
-$ cd /espnet/egs2/mini_libri/diar1
 $ ./run.sh
 ```
 ### Result
