@@ -12,7 +12,7 @@
 ## Installation
 1. Install ESPnet:
 ```sh
-$ cd espnet/tools
+$ cd espnet
 $ pip install -e .
 ```
 2. Create a symbolic link to Kaldi directory:
