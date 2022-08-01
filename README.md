@@ -32,6 +32,8 @@ $ ./setup_anaconda.sh [output-dir-name] [conda-env-name] [python-version]
 #e.g. $ ./setup_anaconda.sh venv espnet 3.7
 ```
 
+Other guides：https://espnet.github.io/espnet/installation.html
+
 
 ## Usage
 ### Inference
